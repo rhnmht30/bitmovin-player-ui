@@ -1,8 +1,9 @@
-import {SelectBox} from './selectbox';
-import {ListSelectorConfig} from './listselector';
-import {UIInstanceManager} from '../uimanager';
 import { PlayerAPI } from 'bitmovin-player';
+
 import { i18n } from '../localization/i18n';
+import { UIInstanceManager } from '../uimanager';
+import { ListSelectorConfig } from './listselector';
+import { SelectBox } from './selectbox';
 
 /**
  * A select box providing a selection of different playback speeds.
@@ -14,11 +15,15 @@ export class PlaybackSpeedSelectBox extends SelectBox {
 
   constructor(config: ListSelectorConfig = {}) {
     super(config);
-    this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.5, 2];
+    this.defaultPlaybackSpeeds = [0.25, 0.5, 1, 1.25, 1.5, 2];
 
-    this.config = this.mergeConfig(config, {
-      cssClasses: ['ui-playbackspeedselectbox'],
-    }, this.config);
+    this.config = this.mergeConfig(
+      config,
+      {
+        cssClasses: ['ui-playbackspeedselectbox'],
+      },
+      this.config
+    );
   }
 
   configure(player: PlayerAPI, uimanager: UIInstanceManager): void {
@@ -26,10 +31,12 @@ export class PlaybackSpeedSelectBox extends SelectBox {
 
     this.addDefaultItems();
 
-    this.onItemSelected.subscribe((sender: PlaybackSpeedSelectBox, value: string) => {
-      player.setPlaybackSpeed(parseFloat(value));
-      this.selectItem(value);
-    });
+    this.onItemSelected.subscribe(
+      (sender: PlaybackSpeedSelectBox, value: string) => {
+        player.setPlaybackSpeed(parseFloat(value));
+        this.selectItem(value);
+      }
+    );
 
     const setDefaultValue = (): void => {
       const playbackSpeed = player.getPlaybackSpeed();
@@ -52,7 +59,7 @@ export class PlaybackSpeedSelectBox extends SelectBox {
   addDefaultItems(customItems: number[] = []): void {
     const sortedSpeeds = this.defaultPlaybackSpeeds.concat(customItems).sort();
 
-    sortedSpeeds.forEach(element => {
+    sortedSpeeds.forEach((element) => {
       if (element !== 1) {
         this.addItem(String(element), `${element}x`);
       } else {
